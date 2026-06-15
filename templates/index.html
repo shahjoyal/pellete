@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abhitech Energycon – OB-1205 Iron Ore Pelletization</title>
+<link rel="icon" type="image/x-icon" href="/static/images/abhitech-logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#fdf8f0;--cream2:#f5ede0;--cream3:#ede0cc;
+  --gold:#c8912a;--gold-light:#e8b84b;--gold-pale:#f5e6c0;
+  --navy:#1a3057;--navy2:#0f1f3a;--navy3:#253d5e;
+  --blue:#2d5fa6;--blue-light:#4a7fc1;
+  --ore:#8b4513;--ore-light:#cd7f32;
+  --text:#2a2015;--text-mid:#5a4a30;--text-dim:#9a8a70;
+  --border:rgba(200,145,42,0.25);
+  --shadow:0 4px 30px rgba(26,48,87,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--cream);
+  color:var(--text);
+  overflow-x:hidden;
+}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:0.6;
+}
+
+/* ── NAVBAR ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(2.5rem,5vw,7rem);height:70px;
+  background:rgba(253,248,240,0.95);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 2px 20px rgba(26,48,87,0.08);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo img{height:38px;width:auto;object-fit:contain;}
+.logo-text{display:flex;flex-direction:column;line-height:1.1;}
+.logo-text .l1{font-family:'Cormorant Garamond',serif;font-size:clamp(1.1rem,1.3vw,1.35rem);font-weight:700;letter-spacing:1px;color:var(--navy);}
+.logo-text .l2{font-family:'JetBrains Mono',monospace;font-size:clamp(0.48rem,0.55vw,0.58rem);letter-spacing:2px;color:var(--gold);text-transform:uppercase;}
+
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{font-size:clamp(0.82rem,0.9vw,0.95rem);font-weight:500;letter-spacing:0.5px;color:var(--text-mid);text-decoration:none;transition:color 0.3s;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;right:100%;height:1.5px;background:var(--gold);transition:right 0.3s;}
+.nav-links a:hover{color:var(--gold);}
+.nav-links a:hover::after{right:0;}
+
+.nav-cta{background:var(--navy);color:#fff;border:none;padding:10px 22px;font-family:'DM Sans';font-size:0.85rem;font-weight:500;letter-spacing:0.5px;cursor:pointer;border-radius:2px;transition:all 0.3s;white-space:nowrap;}
+.nav-cta:hover{background:var(--gold);transform:translateY(-1px);box-shadow:0 4px 16px rgba(200,145,42,0.4);}
+
+/* Hamburger */
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none;}
+.nav-hamburger span{display:block;width:22px;height:2px;background:var(--navy);border-radius:2px;transition:all 0.3s;}
+.nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.nav-hamburger.open span:nth-child(2){opacity:0;}
+.nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* Mobile menu */
+.mobile-menu{
+  display:none;position:fixed;top:70px;left:0;right:0;z-index:190;
+  background:rgba(253,248,240,0.98);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  flex-direction:column;padding:1.5rem;gap:0;
+  box-shadow:0 8px 30px rgba(26,48,87,0.12);
+}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{font-size:0.95rem;font-weight:500;color:var(--text-mid);text-decoration:none;padding:0.75rem 0;border-bottom:1px solid rgba(200,145,42,0.1);transition:color 0.3s;}
+.mobile-menu a:last-child{border-bottom:none;}
+.mobile-menu a:hover{color:var(--gold);}
+.mobile-menu .mobile-cta{margin-top:1rem;background:var(--navy);color:#fff;text-align:center;padding:13px;border-radius:2px;font-weight:600;}
+.mobile-menu .mobile-cta:hover{background:var(--gold);}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;align-items:center;
+  padding:90px clamp(2.5rem,5vw,7rem) 4rem;
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,var(--cream) 0%,var(--cream2) 60%,#e8d5b0 100%);
+}
+.hero-bg-canvas{position:absolute;inset:0;z-index:0;pointer-events:none;}
+.hero-content{position:relative;z-index:2;max-width:min(620px,46%);}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(200,145,42,0.12);border:1px solid var(--gold);
+  padding:6px 16px;border-radius:2px;
+  font-family:'JetBrains Mono';font-size:clamp(0.62rem,0.75vw,0.78rem);letter-spacing:2px;
+  color:var(--gold);text-transform:uppercase;margin-bottom:1.5rem;
+  animation:fadeUp 0.8s ease forwards;opacity:0;
+}
+.hero-badge::before{content:'◈';animation:spin 4s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.hero-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2.6rem,4.5vw,5.5rem);font-weight:700;
+  line-height:1.05;letter-spacing:-0.5px;color:var(--navy);
+  animation:fadeUp 0.8s 0.15s ease forwards;opacity:0;
+}
+.hero-title .highlight{color:var(--gold);font-style:italic;}
+.hero-desc{font-size:clamp(0.95rem,1.05vw,1.12rem);line-height:1.8;color:var(--text-mid);margin:1.5rem 0 2rem;max-width:100%;animation:fadeUp 0.8s 0.3s ease forwards;opacity:0;}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;animation:fadeUp 0.8s 0.45s ease forwards;opacity:0;}
+.btn-gold{background:var(--gold);color:#fff;border:none;padding:13px 28px;font-family:'DM Sans';font-size:0.9rem;font-weight:600;cursor:pointer;border-radius:2px;transition:all 0.3s;}
+.btn-gold:hover{background:var(--gold-light);transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,145,42,0.4);}
+.btn-navy-outline{background:transparent;color:var(--navy);border:1.5px solid var(--navy);padding:13px 28px;font-family:'DM Sans';font-size:0.9rem;font-weight:600;cursor:pointer;border-radius:2px;transition:all 0.3s;}
+.btn-navy-outline:hover{background:var(--navy);color:#fff;transform:translateY(-2px);}
+
+.hero-visual{position:absolute;right:0;top:0;bottom:0;width:48%;z-index:1;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.hero-visual-inner{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+
+/* ── STATS BAR ── */
+.stats-bar{background:var(--navy);padding:2rem clamp(2.5rem,5vw,7rem);display:flex;justify-content:center;flex-wrap:wrap;gap:0;position:relative;z-index:2;}
+.stat-item{flex:1;min-width:130px;max-width:260px;text-align:center;padding:0.75rem 1rem;border-right:1px solid rgba(255,255,255,0.1);}
+.stat-item:last-child{border-right:none;}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,2.4vw,2.8rem);font-weight:700;color:var(--gold-light);display:block;line-height:1;}
+.stat-label{font-size:clamp(0.66rem,0.72vw,0.76rem);letter-spacing:1px;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-top:4px;}
+
+/* ── SECTION COMMON ── */
+section{position:relative;z-index:2;}
+.section-label{font-family:'JetBrains Mono';font-size:clamp(0.62rem,0.72vw,0.76rem);letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:0.75rem;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,3.2vw,3.5rem);font-weight:700;color:var(--navy);line-height:1.1;}
+.section-sub{font-size:clamp(0.9rem,1vw,1.08rem);color:var(--text-mid);line-height:1.8;max-width:620px;margin-top:1rem;}
+
+/* ── OB SECTION ── */
+.ob-section{padding:5rem clamp(2.5rem,5vw,7rem);background:var(--cream);}
+.ob-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;max-width:1400px;margin:0 auto;}
+.ob-visual{position:relative;display:flex;align-items:center;justify-content:center;}
+.ob-card{width:clamp(280px,22vw,380px);height:clamp(280px,22vw,380px);background:linear-gradient(135deg,var(--navy2),var(--navy));border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 20px 60px rgba(26,48,87,0.25);position:relative;overflow:hidden;}
+.ob-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 30%,rgba(200,145,42,0.15),transparent 60%);}
+.ob-formula{font-family:'Cormorant Garamond',serif;font-size:clamp(2.6rem,3.5vw,4rem);font-weight:700;color:var(--gold-light);position:relative;z-index:1;animation:formulaPulse 3s ease-in-out infinite;}
+@keyframes formulaPulse{0%,100%{text-shadow:0 0 20px rgba(232,184,75,0.3);}50%{text-shadow:0 0 40px rgba(232,184,75,0.7),0 0 80px rgba(232,184,75,0.2);}}
+.ob-card-label{font-family:'JetBrains Mono';font-size:0.62rem;letter-spacing:3px;color:rgba(255,255,255,0.4);margin-top:8px;position:relative;z-index:1;}
+.ob-card-desc{font-size:0.78rem;color:rgba(255,255,255,0.3);margin-top:14px;text-align:center;padding:0 1.5rem;position:relative;z-index:1;line-height:1.6;}
+.ob-particle{position:absolute;border-radius:50%;animation:obParticle var(--dur) ease-in-out infinite;animation-delay:var(--del);}
+@keyframes obParticle{0%,100%{transform:translate(0,0);opacity:0.6;}50%{transform:translate(var(--tx),var(--ty));opacity:1;}}
+.ob-features{margin-top:2rem;display:flex;flex-direction:column;gap:1rem;}
+.ob-feat{display:flex;gap:1rem;align-items:flex-start;padding:1.1rem 1.4rem;border:1px solid var(--border);background:rgba(245,237,224,0.6);border-radius:2px;transition:all 0.3s;}
+.ob-feat:hover{border-color:var(--gold);background:rgba(200,145,42,0.06);transform:translateX(4px);}
+.ob-feat-icon{width:34px;height:34px;flex-shrink:0;background:var(--navy);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:0.95rem;}
+.ob-feat-text h4{font-family:'Cormorant Garamond',serif;font-size:clamp(1rem,1.1vw,1.2rem);font-weight:700;color:var(--navy);margin-bottom:3px;}
+.ob-feat-text p{font-size:clamp(0.8rem,0.88vw,0.95rem);color:var(--text-mid);line-height:1.6;}
+
+/* ── PROCESS ── */
+.process-section{padding:5rem clamp(2.5rem,5vw,7rem);background:linear-gradient(180deg,var(--cream2),var(--cream));}
+.process-inner{max-width:1400px;margin:0 auto;}
+.process-header{text-align:center;margin-bottom:3.5rem;}
+.process-flow{display:flex;flex-direction:column;align-items:center;gap:0;position:relative;}
+.process-flow::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--gold),var(--blue),var(--gold),transparent);transform:translateX(-50%);}
+.process-step{display:flex;align-items:center;width:100%;max-width:960px;gap:2rem;padding:1.2rem 0;}
+.process-step:nth-child(even){flex-direction:row-reverse;}
+.step-card{flex:1;background:#fff;border:1px solid var(--border);padding:1.4rem 1.7rem;border-radius:4px;box-shadow:var(--shadow);transition:all 0.4s;position:relative;overflow:hidden;}
+.step-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--gold),var(--blue));}
+.step-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(26,48,87,0.15);border-color:var(--gold);}
+.step-num{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:700;color:rgba(200,145,42,0.12);position:absolute;right:0.75rem;top:-0.3rem;line-height:1;}
+.step-icon-wrap{width:36px;height:36px;background:var(--navy);border-radius:2px;display:flex;align-items:center;justify-content:center;margin-bottom:0.6rem;}
+.step-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.05rem,1.15vw,1.28rem);font-weight:700;color:var(--navy);margin-bottom:5px;}
+.step-desc{font-size:clamp(0.8rem,0.88vw,0.94rem);color:var(--text-mid);line-height:1.65;}
+.step-ob{margin-top:7px;font-size:clamp(0.68rem,0.72vw,0.76rem);color:var(--gold);font-family:'JetBrains Mono';letter-spacing:1px;}
+.step-center{width:48px;height:48px;flex-shrink:0;background:var(--cream);border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:var(--gold);box-shadow:0 0 0 6px var(--cream);position:relative;z-index:1;}
+.step-spacer{flex:1;}
+
+/* ── PARAMS SECTION ── */
+.params-section{padding:5rem clamp(2.5rem,5vw,7rem);background:var(--navy2);}
+.params-inner{max-width:1400px;margin:0 auto;}
+.params-header{text-align:center;margin-bottom:3.5rem;}
+.params-header .section-title{color:#fff;}
+.params-header .section-label{color:var(--gold-light);}
+.params-header .section-sub{color:rgba(255,255,255,0.5);margin:1rem auto 0;}
+.params-grid-6{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5px;background:rgba(255,255,255,0.05);border:1px solid rgba(200,145,42,0.2);}
+.param-card{background:var(--navy);padding:1.75rem 2rem;position:relative;overflow:hidden;transition:all 0.4s;}
+.param-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--gold),var(--blue-light));transform:scaleX(0);transform-origin:left;transition:transform 0.4s;}
+.param-card:hover::after{transform:scaleX(1);}
+.param-card:hover{background:var(--navy3);}
+.param-icon{font-size:1.5rem;margin-bottom:0.8rem;}
+.param-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.05rem,1.15vw,1.28rem);font-weight:700;color:var(--gold-light);margin-bottom:0.4rem;}
+.param-desc{font-size:clamp(0.78rem,0.88vw,0.94rem);color:rgba(255,255,255,0.5);line-height:1.7;}
+.param-range{margin-top:0.8rem;font-family:'JetBrains Mono';font-size:clamp(0.64rem,0.7vw,0.74rem);color:var(--gold);letter-spacing:1px;padding:4px 10px;background:rgba(200,145,42,0.1);display:inline-block;border-radius:2px;}
+
+/* ── FEATURES ── */
+.features-section{padding:5rem clamp(2.5rem,5vw,7rem);background:var(--cream);}
+.features-inner{max-width:1400px;margin:0 auto;}
+.features-header{text-align:center;margin-bottom:3.5rem;}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+.feat-card{background:#fff;border:1px solid var(--border);padding:1.75rem;border-radius:4px;text-align:center;transition:all 0.4s;position:relative;overflow:hidden;}
+.feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(to right,var(--gold),var(--blue));}
+.feat-card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(26,48,87,0.12);border-color:var(--gold);}
+.feat-icon{width:56px;height:56px;margin:0 auto 1rem;background:linear-gradient(135deg,var(--navy),var(--blue));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+.feat-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.05rem,1.15vw,1.25rem);font-weight:700;color:var(--navy);margin-bottom:0.5rem;}
+.feat-desc{font-size:clamp(0.8rem,0.88vw,0.94rem);color:var(--text-mid);line-height:1.7;}
+
+/* ── FOOTER ── */
+footer{background:var(--navy2);border-top:2px solid var(--gold);}
+.footer-top{padding:3.5rem clamp(2.5rem,5vw,7rem) 2.5rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;max-width:1400px;margin:0 auto;}
+.footer-brand .fb-logo{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:0.8rem;}
+.footer-brand .fb-logo img{height:30px;width:auto;object-fit:contain;filter:none;}
+.footer-brand .fb-desc{font-size:clamp(0.78rem,0.86vw,0.92rem);color:rgba(255,255,255,0.45);line-height:1.8;margin-bottom:1.2rem;}
+.footer-contact a{display:flex;align-items:center;gap:8px;font-size:clamp(0.76rem,0.84vw,0.9rem);color:rgba(255,255,255,0.4);text-decoration:none;margin-bottom:5px;transition:color 0.3s;}
+.footer-contact a:hover{color:var(--gold-light);}
+.footer-contact a span{color:var(--gold);}
+.footer-col-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1rem,1.1vw,1.18rem);font-weight:700;color:var(--gold-light);margin-bottom:1rem;letter-spacing:0.5px;}
+.footer-links{list-style:none;}
+.footer-links li{margin-bottom:7px;}
+.footer-links a{font-size:clamp(0.78rem,0.86vw,0.92rem);color:rgba(255,255,255,0.4);text-decoration:none;transition:color 0.3s;}
+.footer-links a:hover{color:var(--gold-light);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.08);padding:1.2rem clamp(2.5rem,5vw,7rem);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-copy{font-family:'JetBrains Mono';font-size:0.62rem;color:rgba(255,255,255,0.25);letter-spacing:1px;}
+.footer-social{display:flex;gap:0.75rem;}
+.social-btn{width:32px;height:32px;border:1px solid rgba(255,255,255,0.15);border-radius:2px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4);text-decoration:none;font-size:0.78rem;transition:all 0.3s;}
+.social-btn:hover{border-color:var(--gold);color:var(--gold-light);}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.reveal{opacity:0;transform:translateY(30px);transition:all 0.7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.gold-divider{height:1px;background:linear-gradient(to right,transparent,var(--gold),var(--blue),var(--gold),transparent);margin:0;}
+
+/* ════════════════════════════
+   MOBILE RESPONSIVE
+════════════════════════════ */
+@media(max-width:900px){
+  nav{padding:0 1.5rem;}
+  .nav-links,.nav-cta{display:none;}
+  .nav-hamburger{display:flex;}
+
+  .hero{padding:80px 1.5rem 3rem;min-height:auto;}
+  .hero-visual{display:none;}
+  .hero-content{max-width:100%;}
+  .hero-title{font-size:clamp(2.2rem,7vw,3.2rem);}
+  .hero-desc{font-size:0.92rem;}
+  .hero-btns{flex-direction:column;}
+  .btn-gold,.btn-navy-outline{width:100%;text-align:center;}
+
+  .stats-bar{padding:1.5rem 1rem;}
+  .stat-item{min-width:calc(50% - 1px);border-right:none;border-bottom:1px solid rgba(255,255,255,0.1);padding:0.75rem;}
+  .stat-item:nth-child(odd){border-right:1px solid rgba(255,255,255,0.1);}
+  .stat-item:nth-last-child(-n+2){border-bottom:none;}
+  .stat-num{font-size:1.8rem;}
+
+  .ob-section,.process-section,.params-section,.features-section{padding:3.5rem 1.5rem;}
+  .ob-grid{grid-template-columns:1fr;gap:2.5rem;}
+  .ob-visual{justify-content:center;}
+  .ob-card{width:260px;height:260px;}
+  .ob-formula{font-size:2.4rem;}
+
+  .process-flow::before{left:24px;}
+  .process-step,.process-step:nth-child(even){flex-direction:row;align-items:flex-start;padding:0.8rem 0;}
+  .step-spacer{display:none;}
+  .step-center{width:40px;height:40px;font-size:0.85rem;flex-shrink:0;box-shadow:none;}
+  .step-card{padding:1rem 1.2rem;}
+  .step-num{font-size:2.2rem;}
+
+  .params-grid-6{grid-template-columns:1fr 1fr;}
+  .param-card{padding:1.2rem;}
+
+  .features-grid{grid-template-columns:1fr;}
+  .feat-card{text-align:left;display:flex;flex-direction:row;gap:1rem;align-items:flex-start;}
+  .feat-icon{flex-shrink:0;margin:0;}
+  .feat-card-text{flex:1;}
+
+  .footer-top{grid-template-columns:1fr 1fr;gap:2rem;}
+  .footer-brand{grid-column:1/-1;}
+  .footer-bottom{padding:1rem 1.5rem;flex-direction:column;align-items:flex-start;gap:0.75rem;}
+}
+
+@media(max-width:500px){
+  nav{padding:0 1rem;height:62px;}
+  .nav-logo img{height:32px;}
+
+  .hero{padding:72px 1rem 2.5rem;}
+  .hero-badge{font-size:0.58rem;padding:5px 12px;}
+  .hero-title{font-size:2rem;}
+  .hero-desc{font-size:0.88rem;}
+
+  .stats-bar{padding:1.2rem 0.75rem;}
+  .stat-item{min-width:50%;}
+  .stat-num{font-size:1.6rem;}
+
+  .ob-section,.process-section,.params-section,.features-section{padding:2.5rem 1rem;}
+  .ob-card{width:100%;max-width:280px;}
+
+  .process-flow::before{left:20px;}
+  .step-center{width:36px;height:36px;font-size:0.78rem;}
+
+  .params-grid-6{grid-template-columns:1fr;}
+
+  .footer-top{grid-template-columns:1fr;gap:1.5rem;padding:2.5rem 1rem 1.5rem;}
+  .footer-bottom{padding:1rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="/static/images/abhitech-logo.png" alt="Abhitech Energycon">
+    <div class="logo-text">
+      <span class="l1">ABHITECH</span>
+      <span class="l2">Energycon Limited</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#ob-product">OB-1205</a></li>
+    <li><a href="#features">Technology</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="nav-cta" onclick="window.location='/login'">Launch Portal →</button>
+  <button class="nav-hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="/" onclick="closeMenu()">Home</a>
+  <a href="#process" onclick="closeMenu()">Process</a>
+  <a href="#ob-product" onclick="closeMenu()">OB-1205</a>
+  <a href="#features" onclick="closeMenu()">Technology</a>
+  <a href="#contact" onclick="closeMenu()">Contact</a>
+  <a href="/login" class="mobile-cta" onclick="closeMenu()">Launch Portal →</a>
+</div>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <canvas class="hero-bg-canvas" id="heroCanvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-badge">◈ Organic Binder Technology — OB-1205</div>
+    <h1 class="hero-title">
+      Redefining<br>
+      Iron Ore<br>
+      <span class="highlight">Pelletization</span>
+    </h1>
+    <p class="hero-desc">
+      Abhitech's OB-1205 is a next-generation organic binder engineered to optimize green pellet strength, reduce bentonite consumption, and enhance induration efficiency across all pelletization systems.
+    </p>
+    <div class="hero-btns">
+      <button class="btn-gold" onclick="window.location='/login'">Access Platform →</button>
+      <button class="btn-navy-outline" onclick="document.getElementById('ob-product').scrollIntoView({behavior:'smooth'})">Learn About OB-1205</button>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-visual-inner">
+      <canvas id="heroAnimCanvas" width="520" height="580" style="opacity:0.9;"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- ══ STATS ══ -->
+<div class="stats-bar">
+  <div class="stat-item"><span class="stat-num">1350°C</span><div class="stat-label">Peak Induration Temp</div></div>
+  <div class="stat-item"><span class="stat-num">12–16mm</span><div class="stat-label">Optimal Pellet Size</div></div>
+  <div class="stat-item"><span class="stat-num">9.5–10.5%</span><div class="stat-label">Optimum Moisture</div></div>
+  <div class="stat-item"><span class="stat-num">65%+</span><div class="stat-label">Fe Content — High Grade</div></div>
+  <div class="stat-item"><span class="stat-num">1800–2400</span><div class="stat-label">Blain No. cm²/g</div></div>
+</div>
+
+<!-- ══ OB PRODUCT ══ -->
+<section class="ob-section" id="ob-product">
+  <div class="ob-grid">
+    <div class="ob-visual reveal">
+      <div class="ob-card">
+        <div class="ob-particle" style="--dur:3s;--del:0s;--tx:-30px;--ty:-20px;width:8px;height:8px;background:rgba(200,145,42,0.4);top:20%;left:15%;"></div>
+        <div class="ob-particle" style="--dur:4s;--del:1s;--tx:25px;--ty:15px;width:5px;height:5px;background:rgba(45,95,166,0.5);top:70%;left:80%;"></div>
+        <div class="ob-particle" style="--dur:3.5s;--del:0.5s;--tx:-15px;--ty:25px;width:6px;height:6px;background:rgba(200,145,42,0.3);top:80%;left:20%;"></div>
+        <div class="ob-particle" style="--dur:2.8s;--del:1.5s;--tx:20px;--ty:-30px;width:7px;height:7px;background:rgba(45,95,166,0.4);top:25%;left:75%;"></div>
+        <div class="ob-formula">OB-1205</div>
+        <div class="ob-card-label">ORGANIC BINDER SOLUTION</div>
+        <div class="ob-card-desc">Advanced polymer-based binder system activating on moisture contact to form adhesive film matrix</div>
+      </div>
+    </div>
+    <div class="ob-content reveal">
+      <div class="section-label">Abhitech's Flagship Product</div>
+      <h2 class="section-title">OB-1205<br>Organic Binder</h2>
+      <p class="section-sub">A precision-engineered organic binder that activates through moisture in raw mix, forming an adhesive film that holds particles together during the balling stage — reducing bentonite dependence and improving pellet integrity.</p>
+      <div class="ob-features">
+        <div class="ob-feat"><div class="ob-feat-icon">💧</div><div class="ob-feat-text"><h4>Moisture-Activated Performance</h4><p>OB-1205 activates using moisture in the raw mix, absorbing excess moisture to form a robust adhesive film on particle surfaces — controlling the critical 9.5–10.5% moisture window.</p></div></div>
+        <div class="ob-feat"><div class="ob-feat-icon">🔗</div><div class="ob-feat-text"><h4>Reduced Bentonite Consumption</h4><p>Enables significant step-wise reduction in bentonite dosage while maintaining or improving green ball characteristics — drop number (GCS) and pellet integrity.</p></div></div>
+        <div class="ob-feat"><div class="ob-feat-icon">🔥</div><div class="ob-feat-text"><h4>Crack & Fine Reduction</h4><p>Increases pellet integrity during induration, reducing cracked pellets, fine generation and joint pellet formation in both straight grate and travelling grate-kiln systems.</p></div></div>
+        <div class="ob-feat"><div class="ob-feat-icon">🏗️</div><div class="ob-feat-text"><h4>Grade & Blend Adaptability</h4><p>OB dosage can be optimized for both high-grade (61–63% Fe) and low-grade (58–60% Fe) iron ores and any blending composition.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gold-divider"></div>
+
+<!-- ══ PROCESS FLOW ══ -->
+<section class="process-section" id="process">
+  <div class="process-inner">
+    <div class="process-header reveal">
+      <div class="section-label">End-to-End Workflow</div>
+      <h2 class="section-title">Iron Ore Pelletization Process</h2>
+      <p class="section-sub" style="margin:1rem auto 0;text-align:center;">From raw iron ore fines to finished pellets — every stage where OB-1205 makes a measurable difference.</p>
+    </div>
+    <div class="process-flow">
+      <div class="process-step reveal">
+        <div class="step-card"><div class="step-num">01</div><div class="step-icon-wrap">⛏️</div><div class="step-title">Crushing & Grinding</div><p class="step-desc">Iron ore fines are crushed and ground to achieve target Blain number of 1800–2400 cm²/g.</p><div class="step-ob">◈ Blain No. critical for OB efficacy</div></div>
+        <div class="step-center">1</div><div class="step-spacer"></div>
+      </div>
+      <div class="process-step reveal">
+        <div class="step-spacer"></div><div class="step-center">2</div>
+        <div class="step-card"><div class="step-num">02</div><div class="step-icon-wrap">🔄</div><div class="step-title">Mixing — Additives + OB-1205</div><p class="step-desc">Ground ore is blended with bentonite, coal/coke, limestone and OB-1205 dosing near the mixer. Water is added to reach optimum moisture of 9.5–10.5%.</p><div class="step-ob">◈ OB dosing point — near moisture source</div></div>
+      </div>
+      <div class="process-step reveal">
+        <div class="step-card"><div class="step-num">03</div><div class="step-icon-wrap">🟤</div><div class="step-title">Balling — Green Pellet Formation</div><p class="step-desc">Mixed material is fed to balling disc or drum. OB-1205's adhesive film maximizes agglomeration rate, reducing undersize (-5mm) and oversize (+18mm) recycle rates.</p><div class="step-ob">◈ OB reduces recycle rate significantly</div></div>
+        <div class="step-center">3</div><div class="step-spacer"></div>
+      </div>
+      <div class="process-step reveal">
+        <div class="step-spacer"></div><div class="step-center">4</div>
+        <div class="step-card"><div class="step-num">04</div><div class="step-icon-wrap">🔥</div><div class="step-title">Induration Furnace — Hardening</div><p class="step-desc">Green pellets pass through drying, preheating, firing (1200–1350°C) and after-firing zones. OB reduces crack formation and fine generation.</p><div class="step-ob">◈ Reduced fines → better furnace draft</div></div>
+      </div>
+      <div class="process-step reveal">
+        <div class="step-card"><div class="step-num">05</div><div class="step-icon-wrap">❄️</div><div class="step-title">Cooling</div><p class="step-desc">Indurated pellets are cooled using forced air. Higher pellet integrity from OB use means fewer chips and cracks during thermal cycling.</p><div class="step-ob">◈ Stronger pellets — less breakage</div></div>
+        <div class="step-center">5</div><div class="step-spacer"></div>
+      </div>
+      <div class="process-step reveal">
+        <div class="step-spacer"></div><div class="step-center">6</div>
+        <div class="step-card"><div class="step-num">06</div><div class="step-icon-wrap">✅</div><div class="step-title">Screening — Finished Pellets</div><p class="step-desc">Final screening to 8–16mm product. Improved size distribution from optimized OB dosage results in higher on-size yield and reduced production losses.</p><div class="step-ob">◈ Higher yield — 12–16mm fraction</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PARAMETERS ══ -->
+<section class="params-section">
+  <div class="params-inner">
+    <div class="params-header reveal">
+      <div class="section-label">Process Parameters</div>
+      <h2 class="section-title">Key Parameters OB-1205 Controls</h2>
+      <p class="section-sub">OB-1205 dosage is optimized against each of these critical process variables to maximize pellet quality and production efficiency.</p>
+    </div>
+    <div class="params-grid-6 reveal">
+      <div class="param-card"><div class="param-icon">🪨</div><div class="param-title">Iron Ore Grade</div><p class="param-desc">High grade (61–63% Fe) and low grade (58–60% Fe) require different OB dosages. Step-wise optimization is critical during grade transitions.</p><div class="param-range">Fe: 58–63% | Al₂O₃ &lt;3–4%</div></div>
+      <div class="param-card"><div class="param-icon">🔀</div><div class="param-title">Blend Composition</div><p class="param-desc">Blending of different iron ore grades impacts recycle rate. OB dosage is increased during blend changes to prevent collapsing pellets.</p><div class="param-range">Blend: 70:30 to 30:70 ratio</div></div>
+      <div class="param-card"><div class="param-icon">💧</div><div class="param-title">Filter Cake Moisture</div><p class="param-desc">Optimum moisture 9.5–10.5%. OB controls moisture behavior to prevent undersize or lump formation.</p><div class="param-range">Optimum: 9.5% – 10.5%</div></div>
+      <div class="param-card"><div class="param-icon">📐</div><div class="param-title">Blain Number</div><p class="param-desc">Surface area parameter (1800–2400 cm²/g) governing agglomeration. OB dosage compensates for variations in fineness.</p><div class="param-range">Target: 1800–2400 cm²/g</div></div>
+      <div class="param-card"><div class="param-icon">🧹</div><div class="param-title">Fines Generation</div><p class="param-desc">Fines reduce permeability and draft pressure causing improper heat transfer. OB minimizes fines in both straight grate and kiln systems.</p><div class="param-range">Straight Grate | TG-Kiln</div></div>
+      <div class="param-card"><div class="param-icon">⚡</div><div class="param-title">Bulk Density & PSD</div><p class="param-desc">OB promotes uniform size distribution across all pellet size fractions (8–10, 10–12, 12–14, 14–16mm), improving bulk density consistency.</p><div class="param-range">PSD: 8mm – 16mm</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FEATURES ══ -->
+<section class="features-section" id="features">
+  <div class="features-inner">
+    <div class="features-header reveal">
+      <div class="section-label">Platform Capabilities</div>
+      <h2 class="section-title">Pelletization Intelligence Platform</h2>
+      <p class="section-sub" style="margin:1rem auto 0;text-align:center;max-width:560px;">Our digital platform models real-time process behavior, helping engineers optimize OB-1205 dosage for maximum pellet quality and minimum production losses.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card reveal"><div class="feat-icon">🔬</div><div class="feat-card-text"><div class="feat-title">Process Simulation</div><p class="feat-desc">Step-by-step simulation of the pelletization workflow from raw material selection through to finished pellet quality estimation.</p></div></div>
+      <div class="feat-card reveal"><div class="feat-icon">📊</div><div class="feat-card-text"><div class="feat-title">OB Dosage Optimizer</div><p class="feat-desc">Input your ore grade, moisture, and Blain number — the platform calculates optimized OB-1205 and bentonite dosage in real time.</p></div></div>
+      <div class="feat-card reveal"><div class="feat-icon">🌡️</div><div class="feat-card-text"><div class="feat-title">Furnace Profile Monitoring</div><p class="feat-desc">Track temperature and pressure profiles across all induration zones — DD1, DD2, PH1, PH2, FZ, CZ1, CZ2 for straight grate and kiln systems.</p></div></div>
+      <div class="feat-card reveal"><div class="feat-icon">♻️</div><div class="feat-card-text"><div class="feat-title">Recycle Rate Analysis</div><p class="feat-desc">Monitor oversize (+18mm) and undersize (-5mm) recycle rates and model interventions to reduce production losses.</p></div></div>
+      <div class="feat-card reveal"><div class="feat-icon">🔗</div><div class="feat-card-text"><div class="feat-title">Blend Management</div><p class="feat-desc">Model different high-grade to low-grade iron ore blending ratios and their impact on OB dosage requirements and pellet characteristics.</p></div></div>
+      <div class="feat-card reveal"><div class="feat-icon">📋</div><div class="feat-card-text"><div class="feat-title">QC Dashboard</div><p class="feat-desc">Track green ball drop number (GCS), cold crushing strength, and size distribution — all in one unified quality control interface.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="gold-divider"></div>
+
+<!-- ══ FOOTER ══ -->
+<footer id="contact">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="fb-logo">
+        <img src="/static/images/abhitech-logo.png" alt="Abhitech Energycon">
+        ABHITECH ENERGYCON
+      </div>
+      <p class="fb-desc">Abhitech Energycon Limited is a leading provider of specialty chemical solutions for the iron and steel industry, including the OB-1205 organic binder system for iron ore pelletization plants worldwide.</p>
+      <div class="footer-contact">
+        <a href="tel:+912265809999"><span>📞</span> +91-22-65809999 / 28479999</a>
+        <a href="mailto:info@abhitechenergycon.com"><span>✉️</span> info@abhitechenergycon.com</a>
+        <a href="https://www.abhitechenergycon.com" target="_blank"><span>🌐</span> www.abhitechenergycon.com</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Products</div>
+      <ul class="footer-links">
+        <li><a href="#">OB-1205 Organic Binder</a></li>
+        <li><a href="#">Pelletization Additives</a></li>
+        <li><a href="#">Bentonite Solutions</a></li>
+        <li><a href="#">Kiln Treatment</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Platform</div>
+      <ul class="footer-links">
+        <li><a href="/login">Process Modeler</a></li>
+        <li><a href="#">Dosage Calculator</a></li>
+        <li><a href="#">Furnace Profiles</a></li>
+        <li><a href="#">QC Dashboard</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links">
+        <li><a href="https://www.abhitechenergycon.com" target="_blank">About Us</a></li>
+        <li><a href="https://www.linkedin.com/company/abhitech-energycon-limited/" target="_blank">LinkedIn</a></li>
+        <li><a href="https://www.youtube.com/watch?v=SZdf2L777Yk" target="_blank">Corporate Film</a></li>
+        <li><a href="https://www.youtube.com/watch?v=VMDoD79oNn0" target="_blank">Cement Sector Film</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 ABHITECH ENERGYCON LIMITED — ALL RIGHTS RESERVED</div>
+    <div class="footer-social">
+      <a href="https://www.linkedin.com/company/abhitech-energycon-limited/" target="_blank" class="social-btn">in</a>
+      <a href="https://www.youtube.com/watch?v=SZdf2L777Yk" target="_blank" class="social-btn">▶</a>
+      <a href="https://www.abhitechenergycon.com" target="_blank" class="social-btn">🌐</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleMenu(){
+  const m=document.getElementById('mobileMenu');
+  const h=document.getElementById('hamburger');
+  m.classList.toggle('open');
+  h.classList.toggle('open');
+}
+function closeMenu(){
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+}
+
+const heroCanvas=document.getElementById('heroCanvas');
+const hctx=heroCanvas.getContext('2d');
+function sizeHero(){heroCanvas.width=heroCanvas.offsetWidth;heroCanvas.height=heroCanvas.offsetHeight;}
+sizeHero();
+const hParticles=[];
+for(let i=0;i<60;i++){hParticles.push({x:Math.random()*heroCanvas.width,y:Math.random()*heroCanvas.height,r:Math.random()*3+0.5,vx:(Math.random()-0.5)*0.15,vy:(Math.random()-0.5)*0.15,opacity:Math.random()*0.3+0.05,color:Math.random()>0.5?'200,145,42':'26,48,87'});}
+function animHero(){
+  hctx.clearRect(0,0,heroCanvas.width,heroCanvas.height);
+  hParticles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=heroCanvas.width;if(p.x>heroCanvas.width)p.x=0;if(p.y<0)p.y=heroCanvas.height;if(p.y>heroCanvas.height)p.y=0;hctx.beginPath();hctx.arc(p.x,p.y,p.r,0,Math.PI*2);hctx.fillStyle=`rgba(${p.color},${p.opacity})`;hctx.fill();});
+  hParticles.forEach((p,i)=>{hParticles.slice(i+1).forEach(q=>{const d=Math.hypot(p.x-q.x,p.y-q.y);if(d<120){hctx.beginPath();hctx.moveTo(p.x,p.y);hctx.lineTo(q.x,q.y);hctx.strokeStyle=`rgba(200,145,42,${0.05*(1-d/120)})`;hctx.lineWidth=0.5;hctx.stroke();}});});
+  requestAnimationFrame(animHero);
+}
+animHero();
+window.addEventListener('resize',()=>{sizeHero();});
+
+const ac=document.getElementById('heroAnimCanvas');
+const actx=ac.getContext('2d');
+let frame=0;
+function drawHeroAnim(){
+  actx.clearRect(0,0,ac.width,ac.height);
+  const cx=ac.width/2,steps=[
+    {y:60,label:'Iron Ore Fines',icon:'⛏',color:'#8b4513'},
+    {y:130,label:'Crushing & Grinding',icon:'⚙',color:'#5a4a30'},
+    {y:200,label:'Mixing + OB-1205',icon:'🔄',color:'#c8912a'},
+    {y:270,label:'Balling',icon:'🟤',color:'#cd7f32'},
+    {y:340,label:'Induration 1350°C',icon:'🔥',color:'#c04010'},
+    {y:410,label:'Cooling',icon:'❄',color:'#2d5fa6'},
+    {y:480,label:'Finished Pellets',icon:'✅',color:'#2a8a50'},
+  ];
+  const activeStep=Math.floor((frame/180)%steps.length);
+  actx.save();actx.strokeStyle='rgba(200,145,42,0.15)';actx.lineWidth=2;actx.setLineDash([6,8]);actx.beginPath();actx.moveTo(cx,30);actx.lineTo(cx,520);actx.stroke();actx.restore();
+  steps.forEach((s,i)=>{
+    const isActive=i<=activeStep,glow=i===activeStep;
+    const y=s.y+(Math.sin(frame*0.04+i)*4);
+    if(isActive&&i<steps.length-1){const t=i===activeStep?(frame%180)/180:1;const y2=steps[i+1].y;actx.save();actx.strokeStyle=s.color;actx.lineWidth=2;actx.setLineDash([]);actx.globalAlpha=0.6;actx.beginPath();actx.moveTo(cx,y+16);actx.lineTo(cx,Math.min(y+16+(y2-y-32)*t,y2-16));actx.stroke();actx.restore();}
+    const w=200,h=36,x=cx-w/2;
+    if(glow){actx.shadowColor=s.color;actx.shadowBlur=20;}
+    actx.fillStyle=isActive?s.color:'rgba(245,237,224,0.6)';actx.strokeStyle=isActive?s.color:'rgba(200,145,42,0.3)';actx.lineWidth=1.5;actx.beginPath();actx.roundRect(x,y-16,w,h,3);actx.fill();actx.stroke();actx.shadowBlur=0;
+    actx.fillStyle=isActive?'#fff':'rgba(90,74,48,0.6)';actx.font=`${isActive?'600':'400'} 12px DM Sans`;actx.textAlign='center';actx.fillText(s.label,cx,y+4);
+    if(i===activeStep&&i<steps.length-1){const t2=(frame%60)/60;const py=s.y+(steps[i+1].y-s.y)*t2;actx.beginPath();actx.arc(cx,py,4,0,Math.PI*2);actx.fillStyle=s.color;actx.fill();}
+  });
+  if(activeStep===steps.length-1){const last=steps[steps.length-1];for(let j=0;j<5;j++){const ang=(frame*0.04)+(j/5)*Math.PI*2;const px=cx+Math.cos(ang)*60;const py=last.y+Math.sin(ang)*20;const rr=5+j%2*2;const grad2=actx.createRadialGradient(px-rr*0.3,py-rr*0.3,0,px,py,rr);grad2.addColorStop(0,'#8ba3b5');grad2.addColorStop(1,'#2a4a5a');actx.beginPath();actx.arc(px,py,rr,0,Math.PI*2);actx.fillStyle=grad2;actx.fill();}}
+  frame++;requestAnimationFrame(drawHeroAnim);
+}
+drawHeroAnim();
+
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
